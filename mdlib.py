@@ -491,7 +491,12 @@ def infogrupo(courseid,saida=recarray):
     else:
         rec2csv(reg, outfile)
         
-        
+def usergroup(userid,courseid):
+
+	query = 'select g.name from mdl_groups g inner join mdl_groups_members gm on g.id = gm.groupid and g.courseid = %s and gm.userid = %s;' %(courseid, userid)
+	nomegrupo = loaddata(query)[0,0]
+	return nomegrupo
+
 def username(userid):
 
     query = 'select firstname, lastname from mdl_user where id = %s' % userid

@@ -71,7 +71,7 @@ def frame(course):
                 frame['Sobrenome AVA'] = users['lastname']
             
                 frame['Número USP'] = users['idnumber']
-                frame['Nome Apolo'] = [pessoa(codpes)['nompes'] if codpes else '' for codpes in users['idnumber']]
+                frame['Nome Júpiter'] = [pessoa(codpes)['nompes'] if codpes else '' for codpes in users['idnumber']]
                 frame[gradename] = grades
                 first = False
                 continue
