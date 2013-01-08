@@ -13,17 +13,13 @@ import pandas
 M2 = [(86,1832),(72,1455),(74,1499),(73,1478),(70,1363),(82,1695),(85,1808),(71,1392)]
 M4 = [(91,2087),(81,1625),(77,1532),(88,1988),(89,1987),(75,1521),(90,1986),(76,1562)]
 
-courses = {'Ciencias':ciencias,
-           'Biologia':biologia,
-           'Sociologia':sociologia,
-           'Supervisores':supervisores,
-           'Coordenadores':coordenadores,
-           'Diretores':diretores}
+courses = {'Módulo 2':M2,
+           'Módulo 4':M4}
 
 
 def itemname(gradeitem):
     ''
-    result = loaddata('select courseid, itemname from mdl_grade_items where id = %s' % gradeitem,moodle='moodle_redefor')
+    result = loaddata('select courseid, itemname from mdl_grade_items where id = %s' % gradeitem,moodle='moodle_lic2')
     if result.size:
         course = courseinfo(result[0,0])['shortname']
         iname = l2u(result[0,1])
@@ -34,17 +30,17 @@ def notas(userids,gradeitem):
     ''
 
     def scalenota(gradeitem):
-        result = loaddata('select scaleid from mdl_grade_items where id = %s' % gradeitem, moodle='moodle_redefor')
+        result = loaddata('select scaleid from mdl_grade_items where id = %s' % gradeitem, moodle='moodle_lic2')
         if result:
             scaleid = result[0,0]
-            result = loaddata('select scale from mdl_scale where id = %s' % scaleid,moodle='moodle_redefor')
+            result = loaddata('select scale from mdl_scale where id = %s' % scaleid,moodle='moodle_lic2')
             if result:
                 scale = result[0,0].split(',')
                 return lambda x: scale[x-1]
 
         
     def nota (userid,gradeitem): 
-        result = loaddata('select finalgrade from mdl_grade_grades where itemid = %s and userid = %s' % (gradeitem,userid),from_cache=False,moodle='moodle_redefor')
+        result = loaddata('select finalgrade from mdl_grade_grades where itemid = %s and userid = %s' % (gradeitem,userid),from_cache=False,moodle='moodle_lic2')
         if result:
             return float(result[0,0])
 
@@ -102,7 +98,7 @@ def frame(course):
     return frame
 
 def moodle_date():
-    return loaddata('select from_unixtime(timemodified) from mdl_grade_grades_history order by timemodified desc limit 1',from_cache=False,moodle='moodle_redefor')[0,0]
+    return loaddata('select from_unixtime(timemodified) from mdl_grade_grades_history order by timemodified desc limit 1',from_cache=False,moodle='moodle_lic2')[0,0]
 
 def query_yes_no(question, default="sim"):
     valid = {"sim":"sim",   "s":"sim",
@@ -149,13 +145,13 @@ def export_grades(courses,d='notas/', sync=False):
         except ImportError:
             print "Faça um 'sudo pip install openpyxl' e tente novamente"            
     if sync:
-        rstr = "rsync -av "+d+" atp.usp.br:/var/www/dados/redefor/"
+        rstr = "rsync -av "+d+" atp.usp.br:/var/www/dados/lic/"
         print rstr
         subprocess.call(rstr,shell=True)
 
 if __name__ == '__main__':
     import os
-    d = os.path.expanduser('~/redefor-analises/dados/notas')
+    d = os.path.expanduser('~/lic-analises/dados/notas')
     export_grades(courses,d, sync=False)
-    print "Agora, faça um rsync -av "+d+" atp.usp.br:/var/www/dados/redefor/"
+    print "Agora, faça um rsync -av "+d+" atp.usp.br:/var/www/dados/lic/"
     print "(Use rsync -av --delete se quiser remover arquivos inexistentes no diretório local do servidor remoto atp.usp.br)"
